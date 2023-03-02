@@ -119,10 +119,50 @@ subject(:board) { described_class.new }
       board.clear
       board_code_holes = board.instance_variable_get(:@code_holes)
       board_key_holes = board.instance_variable_get(:@key_holes)
-      empty_code_holes = Array.new(12) { Array.new }
-      empty_key_holes = Array.new(12) { Set.new }
+      empty_code_holes = Array.new(Board::NUM_ROWS) { Array.new }
+      empty_key_holes = Array.new(Board::NUM_ROWS) { Set.new }
       expect(board_code_holes).to eq(empty_code_holes)
       expect(board_key_holes).to eq(empty_key_holes)
     end
   end # #clear_board
+
+  describe "#set_secret_code" do
+    context "when correct type is used for secret_code" do
+      context "when four code pegs are given" do
+        it "sets the secret code" do
+          secret_code = [
+            Board::CodePeg::RED,
+            Board::CodePeg::ORANGE,
+            Board::CodePeg::YELLOW,
+            Board::CodePeg::GREEN
+          ]
+          board.set_secret_code(secret_code)
+
+          board_secret_code = board.instance_variable_get(:@secret_code)
+          expect(board_secret_code).to eq(secret_code)
+        end
+      end
+
+      context "when two code pegs are given" do
+        it "raises a InvalidCodePegCountError" do
+          secret_code = [Board::CodePeg::RED, Board::CodePeg::ORANGE]
+          
+          error_msg = "An invalid count of #{secret_code.size} code pegs were"\
+                      " given. A row of code pegs must have a count of four."
+          expect{ board.set_secret_code(secret_code) }
+            .to raise_error(Board::InvalidCodePegCountError, error_msg)
+        end
+      end
+    end
+
+    context "when wrong class type is used for secret_code" do
+      it "raises a TypeError" do
+        secret_code = "RED, ORANGE, YELLOW, GREEN"
+
+        error_msg = "Expected an Array. Got #{secret_code.class}."
+        expect{ board.set_secret_code(secret_code) }
+          .to raise_error(TypeError, error_msg)
+      end
+    end
+  end
 end # Board

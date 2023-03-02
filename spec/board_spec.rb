@@ -113,4 +113,16 @@ subject(:board) { described_class.new }
       end
     end
   end # #peg_key_holes
+
+  describe "#clear" do
+    it "clears all code peg holes and key peg holes" do
+      board.clear
+      board_code_holes = board.instance_variable_get(:@code_holes)
+      board_key_holes = board.instance_variable_get(:@key_holes)
+      empty_code_holes = Array.new(12) { Array.new }
+      empty_key_holes = Array.new(12) { Set.new }
+      expect(board_code_holes).to eq(empty_code_holes)
+      expect(board_key_holes).to eq(empty_key_holes)
+    end
+  end # #clear_board
 end # Board

@@ -7,8 +7,8 @@ class Board
   include Errors
 
   def initialize
-    @code_holes = Array.new(12) { Array.new(4) }
-    @key_holes = Array.new(12) { Set.new }
+    @code_holes = create_new_code_holes
+    @key_holes = create_new_key_holes
   end
 
   def peg_code_holes(row_index, code_pegs)
@@ -22,8 +22,8 @@ class Board
 
     # Each code peg is represented by its color.
     # e.g. CodePeg::RED
-    code_pegs.each_with_index do |peg, col_index|
-      @code_holes[row_index][col_index] = peg
+    code_pegs.each do |peg|
+      @code_holes[row_index].append(peg)
     end
   end
 
@@ -41,5 +41,20 @@ class Board
     key_pegs.each do |peg|
       @key_holes[row_index].add(peg)
     end
+  end
+
+  def clear
+    @code_holes = create_new_code_holes
+    @key_holes = create_new_key_holes
+  end
+
+  private
+
+  def create_new_code_holes
+    Array.new(12) { Array.new }
+  end
+
+  def create_new_key_holes
+    Array.new(12) { Set.new }
   end
 end

@@ -1,3 +1,4 @@
+require 'Set'
 require './peg.rb'
 require './board_errors.rb'
 
@@ -21,7 +22,7 @@ class Board
   # [0, 11].
   # Raises an InvalidCodePegCountError if exactly four pegs are not given.
   def peg_code_holes(row_index, code_pegs)
-    # Validate row index before moving on.
+    # Validate row index.
     @code_holes.fetch(row_index)
 
     # Disallow empty code peg holes or more than four.
@@ -42,7 +43,7 @@ class Board
   # [0, 11].
   # Raises an InvalidKeyPegCountError if more than four key pegs are given.
   def peg_key_holes(row_index, key_pegs)
-    # Validate row index before moving on.
+    # Validate row index.
     @key_holes.fetch(row_index)
 
     # Disallow key peg count greater than four.
@@ -55,6 +56,14 @@ class Board
     key_pegs.each do |peg|
       @key_holes[row_index].add(peg)
     end
+  end
+
+  ##
+  # Return the code peg row at the given index.
+  # Raise an IndexError if the index is not within the bounds of [0, 11].
+  def get_code_peg_row(row_index)
+    # Validate row index.
+    @code_holes.fetch(row_index)
   end
 
   def clear

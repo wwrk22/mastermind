@@ -4,7 +4,6 @@ RSpec.describe Game do
   subject(:game) { described_class.new }
 
   describe "#prompt_guess" do
-
     context "when guess does not have length of four" do
       before do
         invalid_guess = "01"
@@ -62,4 +61,39 @@ RSpec.describe Game do
       end
     end
   end # #prompt_guess
+
+  describe "#prompt_and_peg_guess" do
+    let(:current_board_row) { game.instance_variable_get(:@current_board_row) }
+    let(:board) { instance_double(Board) }
+    let(:valid_guess) { [0, 1, 2, 3] }
+
+    before do
+      game.instance_variable_set(:@board, board)
+    end
+
+    context "when a valid guess is given on the first prompt" do
+
+      before do
+        allow(game).to receive(:prompt_guess).and_return(valid_guess)
+      end
+
+      it "pegs the user guess in the current board row" do
+        expect(board).to receive(:peg_code_holes).with(current_board_row, valid_guess)
+        game.prompt_and_peg_guess
+      end
+    end
+
+    context "when a valid guess is given on the second prompt" do
+      before do
+        invalid_guess = nil
+        allow(game).to receive(:prompt_guess).and_return(invalid_guess, valid_guess)
+      end
+
+      it "pegs the user guess in the current board row" do
+        expect(board).to receive(:peg_code_holes).with(current_board_row, valid_guess)
+        game.prompt_and_peg_guess
+      end
+    end
+  end
+
 end

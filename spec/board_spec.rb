@@ -2,32 +2,6 @@ require_relative '../board.rb'
 
 RSpec.describe Board do
 subject(:board) { described_class.new }
-
-  describe "#get_code_peg_row" do
-    context "when invalid row index is given" do
-      it "raises an IndexError" do
-        row_index = 99
-        expect{ board.get_code_peg_row(row_index) }.to raise_error(IndexError)
-      end
-    end
-
-    context "when valid row index is given" do
-      it "returns the correct row" do
-        row_index = 0
-        code_pegs = [
-          Board::CodePeg::RED,
-          Board::CodePeg::ORANGE,
-          Board::CodePeg::YELLOW,
-          Board::CodePeg::GREEN
-        ]
-        board_code_holes = board.instance_variable_get(:@code_holes)
-        board_code_holes[0] = code_pegs
-
-        expect(board.get_code_peg_row(row_index)).to eq(code_pegs)
-      end
-    end
-  end # #get_code_peg_row
-
   describe "#peg_code_holes" do
     context "when invalid row index is given" do
       it "raises an IndexError" do
@@ -57,8 +31,8 @@ subject(:board) { described_class.new }
           ]
           board.peg_code_holes(row_index, code_pegs)
           
-          board_code_holes = board.instance_variable_get(:@code_holes)
-          expect(board_code_holes[row_index]).to eq(code_pegs)
+          board_code_rows = board.instance_variable_get(:@code_rows)
+          expect(board_code_rows[row_index]).to eq(code_pegs)
         end
       end
 
@@ -130,9 +104,8 @@ subject(:board) { described_class.new }
           key_pegs = [Board::KeyPeg::WHITE, Board::KeyPeg::BLACK]
           board.peg_key_holes(row_index, key_pegs)
 
-          board_key_holes = board.instance_variable_get(:@key_holes)
-          key_pegs_set = Set.new(key_pegs)
-          expect(board_key_holes[0]).to eq(key_pegs_set)
+          board_key_rows = board.instance_variable_get(:@key_rows)
+          expect(board_key_rows[0]).to eq(key_pegs)
         end
       end
     end
@@ -141,12 +114,12 @@ subject(:board) { described_class.new }
   describe "#clear" do
     it "clears all code peg holes and key peg holes" do
       board.clear
-      board_code_holes = board.instance_variable_get(:@code_holes)
-      board_key_holes = board.instance_variable_get(:@key_holes)
-      empty_code_holes = Array.new(Board::NUM_ROWS) { Array.new }
-      empty_key_holes = Array.new(Board::NUM_ROWS) { Set.new }
-      expect(board_code_holes).to eq(empty_code_holes)
-      expect(board_key_holes).to eq(empty_key_holes)
+      board_code_rows = board.instance_variable_get(:@code_rows)
+      board_key_rows = board.instance_variable_get(:@key_rows)
+      empty_code_rows = Array.new(Board::NUM_ROWS) { Array.new }
+      empty_key_rows = Array.new(Board::NUM_ROWS) { Array.new }
+      expect(board_code_rows).to eq(empty_code_rows)
+      expect(board_key_rows).to eq(empty_key_rows)
     end
   end # #clear_board
 
@@ -189,5 +162,9 @@ subject(:board) { described_class.new }
       end
     end
   end # #set_secret_code
+
+  describe "#display_board" do
+    
+  end
 
 end # Board

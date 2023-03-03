@@ -81,7 +81,7 @@ class Board
 
   ##
   # Print the board to stdout.
-  def display_board
+  def display
     full_rows = @code_rows.zip(@key_rows)
 
     full_rows.each do |row|
@@ -89,7 +89,7 @@ class Board
       key_pegs = row[1]
 
       code_pegs.each { |code_peg| print "#{code_peg} " }
-      print '| '
+      print "| "
       key_pegs.each { |key_peg| print "#{key_peg} " }
       print "\n"
     end
@@ -97,8 +97,8 @@ class Board
 
   ##
   # Set the secret code. The secret_code arg must be an Array of size 4.
-  # Raise an <error-here> if secret_code is not an Array.
-  # Raise an <error-here> if secret_code does not have four colors.
+  # Raise a TypeError if secret_code is not an Array.
+  # Raise an InvalidCodePegCountError if secret_code does not have four colors.
   def set_secret_code(secret_code)
     # Validate type and size.
     if secret_code.class != Array

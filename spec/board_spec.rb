@@ -162,9 +162,4 @@ subject(:board) { described_class.new }
       end
     end
   end # #set_secret_code
-
-  describe "#display_board" do
-    
-  end
-
 end # Board

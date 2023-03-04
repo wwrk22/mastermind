@@ -50,6 +50,11 @@ class Game
     key_pegs
   end
 
+  def play_guess
+    guess = @board.get_code_peg_row(@current_board_row)
+    @game_over = check_guess(guess)
+  end
+
   private
 
   def generate_secret_code

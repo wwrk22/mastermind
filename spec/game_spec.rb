@@ -138,6 +138,42 @@ RSpec.describe Game do
       generated_key_pegs = game.generate_key_pegs(guess)
       expect(generated_key_pegs).to eq(expected_key_pegs)
     end
-  end
+  end # #generate_key_pegs
 
+  describe "#play_guess" do
+    let(:board) { instance_double(Board) }
+    let(:current_board_row) { game.instance_variable_get(:@current_board_row) }
+    let(:secret_code) { game.instance_variable_get(:@secret_code) }
+
+    before do
+      game.instance_variable_set(:@board, board)
+    end
+
+    context "when guess is correct" do
+      before do
+        allow(board).to receive(:get_code_peg_row).with(current_board_row).and_return(secret_code)
+      end
+
+      it "sets game over to true" do
+        game.play_guess
+
+        game_over = game.instance_variable_get(:@game_over)
+        expect(game_over).to eq(true)
+      end
+    end
+
+    context "when guess is incorrect" do
+      before do
+        wrong_code = secret_code.map { |code| (code * 2) % 6 }
+        allow(board).to receive(:get_code_peg_row).with(current_board_row).and_return(wrong_code)
+      end
+
+      it "sets game over to false" do
+        game.play_guess
+
+        game_over = game.instance_variable_get(:@game_over)
+        expect(game_over).to eq(false)
+      end
+    end
+  end
 end

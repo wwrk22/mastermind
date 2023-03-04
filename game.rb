@@ -32,14 +32,28 @@ class Game
     @board.peg_code_holes(@current_board_row, guess)
   end
 
+  def check_guess(code_pegs)
+    return code_pegs == @secret_code
+  end
+
+  def generate_key_pegs(code_pegs)
+    key_pegs = []
+
+    code_pegs.each_with_index do |code_peg, index|
+      if code_peg == @secret_code[index]
+        key_pegs.append(Board::KeyPeg::BLACK)
+      elsif @secret_code.include? code_peg
+        key_pegs.append(Board::KeyPeg::WHITE)
+      end
+    end
+
+    key_pegs
+  end
+
   private
 
   def generate_secret_code
     [rand(6), rand(6), rand(6), rand(6)]
-  end
-
-  def check_guess(code_pegs)
-    return code_pegs == @secret_code
   end
   
   def guess_valid?(guess)

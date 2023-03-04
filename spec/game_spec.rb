@@ -94,6 +94,50 @@ RSpec.describe Game do
         game.prompt_and_peg_guess
       end
     end
+  end # #prompt_and_peg_guess
+
+  describe "#check_guess" do
+    context "when guess is correct" do
+      it "returns true" do
+        secret_code = game.instance_variable_get(:@secret_code)
+        
+        result = game.check_guess(secret_code)
+        expect(result).to eq(true)
+      end
+    end
+
+    context "when guess is incorrect" do
+      it "returns false after placing key pegs in the current row" do
+        secret_code = [0, 1, 2, 3]
+        wrong_code = [0, 1, 2, 4]
+        game.instance_variable_set(:@secret_code, secret_code)
+
+        result = game.check_guess(wrong_code)
+        expect(result).to eq(false)
+      end
+    end
+  end # #check_guess
+
+  describe "#generate_key_pegs" do
+    it "generates an order-agnostic array of key pegs for a given row of code pegs" do
+      secret_code = [
+        Board::CodePeg::RED,
+        Board::CodePeg::ORANGE,
+        Board::CodePeg::YELLOW,
+        Board::CodePeg::GREEN
+      ]
+      guess = [
+        Board::CodePeg::RED,
+        Board::CodePeg::BLUE,
+        Board::CodePeg::BLUE,
+        Board::CodePeg::ORANGE
+      ]
+      expected_key_pegs = [Board::KeyPeg::BLACK, Board::KeyPeg::WHITE]
+      game.instance_variable_set(:@secret_code, secret_code)
+
+      generated_key_pegs = game.generate_key_pegs(guess)
+      expect(generated_key_pegs).to eq(expected_key_pegs)
+    end
   end
 
 end

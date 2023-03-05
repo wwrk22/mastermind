@@ -11,17 +11,18 @@ class Board
 
   attr_reader :secret_code
 
-  def initialize
-    @code_rows = create_new_row
-    @key_rows = create_new_row
+  def initialize(secret_code = nil)
+    @secret_code = secret_code
+    @code_rows = create_new_rows
+    @key_rows = create_new_rows
   end
 
   ##
-  # Peg the given code_pegs in the row at index row_index.
+  # Place the given code_pegs in the row at index row_index.
   # Raises an IndexError if the given row_index is not within the bounds of
   # [0, 11].
   # Raises an InvalidCodePegCountError if exactly four pegs are not given.
-  def peg_code_holes(row_index, code_pegs)
+  def place_code_pegs(row_index, code_pegs)
     # Validate row index.
     @code_rows.fetch(row_index)
 
@@ -38,11 +39,11 @@ class Board
   end
 
   ##
-  # Peg the given key_pegs in the row at index row_index.
+  # Place the given key_pegs in the row at index row_index.
   # Raises an IndexError if the given row_index is not within the bounds of
   # [0, 11].
   # Raises an InvalidKeyPegCountError if more than four key pegs are given.
-  def peg_key_holes(row_index, key_pegs)
+  def place_key_pegs(row_index, key_pegs)
     # Validate row index.
     @key_rows.fetch(row_index)
 
@@ -59,24 +60,24 @@ class Board
   end
 
   ##
-  # Return the code peg row at the given index.
+  # Return the code pegs from the row at the given index.
   # Raise an IndexError if the index is not within the bounds of [0, 11].
-  def get_code_peg_row(row_index)
+  def get_code_pegs(row_index)
     @code_rows.fetch(row_index)
   end
 
   ##
-  # Return the key peg row at the given index.
+  # Return the key peg from the row at the given index.
   # Raise an IndexError if the index is not within the bounds of [0, 11].
-  def get_key_peg_row(row_index)
+  def get_key_pegs(row_index)
     @key_rows.fetch(row_index)
   end
 
   ##
   # Clear all rows of code pegs and key pegs.
   def clear
-    @code_rows = create_new_row
-    @key_rows = create_new_row
+    @code_rows = create_new_rows
+    @key_rows = create_new_rows
   end
 
   ##
@@ -99,7 +100,7 @@ class Board
   # Set the secret code. The secret_code arg must be an Array of size 4.
   # Raise a TypeError if secret_code is not an Array.
   # Raise an InvalidCodePegCountError if secret_code does not have four colors.
-  def set_secret_code(secret_code)
+  def secret_code=(secret_code)
     # Validate type and size.
     if secret_code.class != Array
       raise TypeError, "Expected an Array. Got #{secret_code.class}."
@@ -114,7 +115,7 @@ class Board
 
   private
 
-  def create_new_row
+  def create_new_rows
     Array.new(NUM_ROWS) { Array.new }
   end
 end

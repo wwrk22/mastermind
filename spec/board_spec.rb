@@ -2,7 +2,7 @@ require_relative '../board.rb'
 
 RSpec.describe Board do
 subject(:board) { described_class.new }
-  describe "#peg_code_holes" do
+  describe "#place_code_pegs" do
     context "when invalid row index is given" do
       it "raises an IndexError" do
         row_index = 99
@@ -13,7 +13,7 @@ subject(:board) { described_class.new }
           Board::CodePeg::GREEN
         ]
 
-        expect{ board.peg_code_holes(row_index, code_pegs) }
+        expect{ board.place_code_pegs(row_index, code_pegs) }
           .to raise_error(IndexError)
       end
     end
@@ -29,7 +29,7 @@ subject(:board) { described_class.new }
             Board::CodePeg::YELLOW,
             Board::CodePeg::GREEN
           ]
-          board.peg_code_holes(row_index, code_pegs)
+          board.place_code_pegs(row_index, code_pegs)
           
           board_code_rows = board.instance_variable_get(:@code_rows)
           expect(board_code_rows[row_index]).to eq(code_pegs)
@@ -43,7 +43,7 @@ subject(:board) { described_class.new }
             error_msg = "An invalid count of #{code_pegs.size} code pegs were"\
                         " given. A row of code pegs must have a count of four."
 
-            expect{ board.peg_code_holes(row_index, code_pegs) }
+            expect{ board.place_code_pegs(row_index, code_pegs) }
               .to raise_error(Board::InvalidCodePegCountError, error_msg)
           end
         end
@@ -60,21 +60,21 @@ subject(:board) { described_class.new }
             error_msg = "An invalid count of #{code_pegs.size} code pegs were"\
                         " given. A row of code pegs must have a count of four."
 
-            expect{ board.peg_code_holes(row_index, code_pegs) }
+            expect{ board.place_code_pegs(row_index, code_pegs) }
               .to raise_error(Board::InvalidCodePegCountError, error_msg)
           end
         end
       end
     end
-  end # #peg_code_holes
+  end # #place_code_pegs
 
-  describe "#peg_key_holes" do
+  describe "#place_key_pegs" do
     context "when invalid row index is given" do
       it "raises an IndexError" do
         row_index = 99
         key_pegs = [Board::KeyPeg::BLACK, Board::KeyPeg::WHITE]
 
-        expect{ board.peg_key_holes(row_index, key_pegs) }
+        expect{ board.place_key_pegs(row_index, key_pegs) }
           .to raise_error(IndexError)
       end
     end
@@ -94,7 +94,7 @@ subject(:board) { described_class.new }
           error_msg = "An invalid count of #{key_pegs.size} key pegs were"\
                       " given. A row can have at most four key pegs."
 
-          expect{ board.peg_key_holes(row_index, key_pegs) }
+          expect{ board.place_key_pegs(row_index, key_pegs) }
             .to raise_error(Board::InvalidKeyPegCountError, error_msg)
         end
       end
@@ -102,14 +102,14 @@ subject(:board) { described_class.new }
       context "when two key pegs are given" do
         it "correctly places the two key pegs" do
           key_pegs = [Board::KeyPeg::WHITE, Board::KeyPeg::BLACK]
-          board.peg_key_holes(row_index, key_pegs)
+          board.place_key_pegs(row_index, key_pegs)
 
           board_key_rows = board.instance_variable_get(:@key_rows)
           expect(board_key_rows[0]).to eq(key_pegs)
         end
       end
     end
-  end # #peg_key_holes
+  end # #place_key_pegs
 
   describe "#clear" do
     it "clears all code peg holes and key peg holes" do
@@ -123,7 +123,7 @@ subject(:board) { described_class.new }
     end
   end # #clear_board
 
-  describe "#set_secret_code" do
+  describe "#secret_code" do
     context "when correct type is used for secret_code" do
       context "when four code pegs are given" do
         it "sets the secret code" do
@@ -133,7 +133,7 @@ subject(:board) { described_class.new }
             Board::CodePeg::YELLOW,
             Board::CodePeg::GREEN
           ]
-          board.set_secret_code(secret_code)
+          board.secret_code = secret_code
 
           board_secret_code = board.instance_variable_get(:@secret_code)
           expect(board_secret_code).to eq(secret_code)
@@ -146,7 +146,7 @@ subject(:board) { described_class.new }
           
           error_msg = "An invalid count of #{secret_code.size} code pegs were"\
                       " given. A row of code pegs must have a count of four."
-          expect{ board.set_secret_code(secret_code) }
+          expect{ board.secret_code = secret_code }
             .to raise_error(Board::InvalidCodePegCountError, error_msg)
         end
       end
@@ -157,9 +157,9 @@ subject(:board) { described_class.new }
         secret_code = "RED, ORANGE, YELLOW, GREEN"
 
         error_msg = "Expected an Array. Got #{secret_code.class}."
-        expect{ board.set_secret_code(secret_code) }
+        expect{ board.secret_code = secret_code }
           .to raise_error(TypeError, error_msg)
       end
     end
-  end # #set_secret_code
+  end # #secret_code
 end # Board

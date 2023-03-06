@@ -39,6 +39,14 @@ class Game
   end
 
 
+  ##
+  # Return true if the given guess matches the secret code on the game board.
+  # Otherwise, return false.
+  def check_guess(guess)
+    return guess == @board.secret_code
+  end
+
+
   private
 
   ##

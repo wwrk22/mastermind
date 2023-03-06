@@ -76,5 +76,16 @@ RSpec.describe Game do
   end # #prompt_guess
 
 
+  describe "#check_guess" do
+    let(:board) { Board.new }
+    subject(:game) { described_class.new(board, nil, nil) }
 
+    context "when guess is correct" do
+      it "returns true" do
+        board.secret_code = [0, 1, 2, 3]
+        result = game.check_guess(board.secret_code)
+        expect(result).to eq(true)
+      end
+    end
+  end
 end

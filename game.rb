@@ -17,4 +17,47 @@ class Game
     secret_code = [rand(6), rand(6), rand(6), rand(6)]
     @board.secret_code = secret_code
   end
+
+
+  ##
+  # Prompt player for a guess then return an array containing the four numbers of
+  # the guess. Return nil if the guess is invalid.
+  def prompt_guess
+    guess = gets.chomp
+    
+    if guess_valid? guess
+      guess_array = []
+
+      guess.each_char do |c|
+        guess_array.append(c.to_i)
+      end
+
+      return guess_array
+    else
+      return nil
+    end
+  end
+
+
+  private
+
+  ##
+  # Check to make sure each digit (code peg) in the guess is a valid one.
+  # Integer ordinals of '0', '1', ..., '5' are 48 to 53. Return true if
+  # all digits are valid. Otherwise, return false.
+  def guess_valid?(guess)
+    if guess.length == 4
+      valid_range = Array(48..53)
+      
+      guess.each_char do |c|
+        if valid_range.include?(c.ord) == false
+          return false
+        end
+      end
+
+      return true
+    else
+      return false
+    end
+  end
 end

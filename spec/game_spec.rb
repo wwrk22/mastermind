@@ -76,16 +76,32 @@ RSpec.describe Game do
   end # #prompt_guess
 
 
-  describe "#check_guess" do
+  describe "#generate_key_pegs" do 
     let(:board) { Board.new }
     subject(:game) { described_class.new(board, nil, nil) }
 
-    context "when guess is correct" do
-      it "returns true" do
-        board.secret_code = [0, 1, 2, 3]
-        result = game.check_guess(board.secret_code)
-        expect(result).to eq(true)
-      end
+    before do
+      secret_code = [
+        Board::CodePeg::RED,
+        Board::CodePeg::ORANGE,
+        Board::CodePeg::YELLOW,
+        Board::CodePeg::GREEN
+      ]
+
+      board.secret_code = secret_code
+    end
+
+    it "generates an order-agnostic array of key pegs for a given row of code pegs" do
+      guess = [
+        Board::CodePeg::RED,
+        Board::CodePeg::BLUE,
+        Board::CodePeg::BLUE,
+        Board::CodePeg::ORANGE
+      ]
+      expected_key_pegs = [Board::KeyPeg::BLACK, Board::KeyPeg::WHITE]
+
+      generated_key_pegs = game.generate_key_pegs(guess)
+      expect(generated_key_pegs).to eq(expected_key_pegs)
     end
   end
 end

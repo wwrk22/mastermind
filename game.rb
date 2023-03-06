@@ -47,6 +47,23 @@ class Game
   end
 
 
+  ##
+  # Return an array of correctly generated key pegs for the given code pegs.
+  def generate_key_pegs(code_pegs)
+    key_pegs = []
+
+    code_pegs.each_with_index do |code_peg, index|
+      if code_peg == @board.secret_code[index]
+        key_pegs.append(Board::KeyPeg::BLACK)
+      elsif @board.secret_code.include? code_peg
+        key_pegs.append(Board::KeyPeg::WHITE)
+      end
+    end
+
+    key_pegs
+  end
+
+
   private
 
   ##

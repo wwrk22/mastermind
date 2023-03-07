@@ -95,10 +95,14 @@ RSpec.describe Game do
   describe "#end_of_guess_check" do
     subject(:game) { described_class.new(Board.new, nil, nil) }
 
+    before do
+      allow(game).to receive(:display_round_results)
+    end
+
     context "when player has at least one more guess left for the round" do
       it "does not display round results" do
-        expect(game).not_to receive(:display_round_results)
         game.end_of_guess_check
+        expect(game).not_to have_received(:display_round_results)
       end
     end
 
@@ -108,8 +112,8 @@ RSpec.describe Game do
       end
 
       it "displays round results" do
-        expect(game).to receive(:display_round_results)
         game.end_of_guess_check
+        expect(game).to have_received(:display_round_results)
       end
 
     end

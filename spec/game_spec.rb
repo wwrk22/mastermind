@@ -1,7 +1,9 @@
 require_relative '../game.rb'
+require 'support/game_spec_helper'
 
 
 RSpec.describe Game do
+  include GameSpecHelper
 
   describe "#generate_and_set_secret_code" do
     let(:board) { instance_double(Board) }
@@ -80,28 +82,13 @@ RSpec.describe Game do
     let(:board) { Board.new }
     subject(:game) { described_class.new(board, nil, nil) }
 
-    before do
-      secret_code = [
-        Board::CodePeg::RED,
-        Board::CodePeg::ORANGE,
-        Board::CodePeg::YELLOW,
-        Board::CodePeg::GREEN
-      ]
-
-      board.secret_code = secret_code
+    GameSpecHelper::SAMPLES.each do |sample|
+      it "generates an order-agnostic array of key pegs for a given row of code pegs" do
+        board.secret_code = sample[:secret_code]
+        generated_key_pegs = game.generate_key_pegs(sample[:guess])
+        expect(generated_key_pegs).to eq(sample[:key_pegs])
+      end
     end
+  end # #generate_key_pegs
 
-    it "generates an order-agnostic array of key pegs for a given row of code pegs" do
-      guess = [
-        Board::CodePeg::RED,
-        Board::CodePeg::BLUE,
-        Board::CodePeg::BLUE,
-        Board::CodePeg::ORANGE
-      ]
-      expected_key_pegs = [Board::KeyPeg::BLACK, Board::KeyPeg::WHITE]
-
-      generated_key_pegs = game.generate_key_pegs(guess)
-      expect(generated_key_pegs).to eq(expected_key_pegs)
-    end
-  end
 end

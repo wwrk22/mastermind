@@ -52,11 +52,20 @@ class Game
   def generate_key_pegs(code_pegs)
     key_pegs = []
 
+    # Keep track of code pegs that haven't been matched yet.
+    not_yet_matched = Array.new(@board.secret_code)
+
     code_pegs.each_with_index do |code_peg, index|
       if code_peg == @board.secret_code[index]
         key_pegs.append(Board::KeyPeg::BLACK)
-      elsif @board.secret_code.include? code_peg
-        key_pegs.append(Board::KeyPeg::WHITE)
+        not_yet_matched.delete(code_peg)
+      else
+        found_index = not_yet_matched.find_index(code_peg)
+
+        if found_index.nil? == false
+          not_yet_matched.delete_at(found_index)
+          key_pegs.append(Board::KeyPeg::WHITE)
+        end
       end
     end
 

@@ -7,6 +7,7 @@ class Game
     @players = [player_1, player_2]
     @board_row_index = 0
     @num_rounds = num_rounds
+    @round_num = 0
   end
 
   ##
@@ -85,10 +86,6 @@ class Game
     end
   end
 
-  
-  def display_round_results
-  end
-
 
   private
 
@@ -110,5 +107,18 @@ class Game
     else
       return false
     end
+  end
+
+
+  ##
+  # Print the results of the current round to stdout.
+  def display_round_results
+    winner = @players[@round_winner_index]
+    loser = @players[(@round_winner_index + 1) % 2]
+
+    puts "End of round #{@round_num}"
+    puts "#{winner} wins this round"
+    puts "#{winner} has #{winner.score} points"
+    puts "#{loser} has #{loser.score} points"
   end
 end

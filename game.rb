@@ -5,7 +5,7 @@ class Game
   def initialize(board, player_1, player_2, num_rounds=1)
     @board = board
     @players = [player_1, player_2]
-    @board_row_idx = 0
+    @board_row_index = 0
     @num_rounds = num_rounds
   end
 
@@ -70,6 +70,23 @@ class Game
     end
 
     key_pegs
+  end
+
+
+  ##
+  # If there is at least one more row to be played on the board, then simply
+  # increment @board_row_index. Otherwise, set @board_row_index to zero, then
+  # display the round results.
+  def end_of_guess_check
+    @board_row_index = (@board_row_index + 1) % Board::NUM_ROWS
+
+    if @board_row_index == 0
+      display_round_results
+    end
+  end
+
+  
+  def display_round_results
   end
 
 

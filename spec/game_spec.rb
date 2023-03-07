@@ -91,4 +91,28 @@ RSpec.describe Game do
     end
   end # #generate_key_pegs
 
+
+  describe "#end_of_guess_check" do
+    subject(:game) { described_class.new(Board.new, nil, nil) }
+
+    context "when player has at least one more guess left for the round" do
+      it "does not display round results" do
+        expect(game).not_to receive(:display_round_results)
+        game.end_of_guess_check
+      end
+    end
+
+    context "when player has no guesses left for the round" do
+      before do
+        game.instance_variable_set(:@board_row_index, Board::NUM_ROWS - 1)
+      end
+
+      it "displays round results" do
+        expect(game).to receive(:display_round_results)
+        game.end_of_guess_check
+      end
+
+    end
+  end # #end_of_guess_check
+
 end

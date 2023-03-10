@@ -24,65 +24,39 @@ RSpec.describe Game do
   end # #generate_and_set_secret_code
 
 
+  # Looping Script Method
   describe "#prompt_guess" do
     subject(:game) { described_class.new(Board.new, nil, nil) }
+    let(:error_message) { "Invalid input. Guess must be four digits with every digit within [0,5]." }
+    let(:valid_input) { "0123" }
+    let(:invalid_input) { "01ww" }
 
-    context "when guess does not have length of four" do
+    before do
+      allow(game).to receive(:puts).with(error_message)
+    end
+
+    context "when user input is valid" do
       before do
-        invalid_guess = "01"
-        allow(game).to receive(:gets).and_return(invalid_guess)
+        allow(game).to receive(:gets).and_return(valid_input)
       end
 
-      it "returns nil" do
-        guess = game.prompt_guess
-        expect(guess).to be_nil
+      it "does not display the error message and immediately stops loop" do
+        game.prompt_guess
+        expect(game).not_to have_received(:puts).with(error_message)
       end
     end
 
-    context "when guess has at least one non-integer char" do
+    context "when user gives an invalid input, then a valid input" do
       before do
-        invalid_guess = "12ab"
-        allow(game).to receive(:gets).and_return(invalid_guess)
+        allow(game).to receive(:gets).and_return(invalid_input, valid_input)
       end
 
-      it "returns nil" do
-        guess = game.prompt_guess
-        expect(guess).to be_nil
-      end
-    end
-
-    context "when guess is four digits" do
-      context "when one digit is not within [0, 5]" do
-        before do
-          invalid_guess = "1127"
-          allow(game).to receive(:gets).and_return(invalid_guess)
-        end
-
-        it "returns nil" do
-          guess = game.prompt_guess
-          expect(guess).to be_nil
-        end
-      end
-
-      context "when all four digits are within [0, 5]" do
-        let(:valid_guess) { "1122" }
-
-        before do
-          allow(game).to receive(:gets).and_return(valid_guess)
-        end
-
-        it "returns the guess as an array of the four digits" do
-          valid_guess_array = []
-
-          valid_guess.each_char do |c|
-            valid_guess_array.append(c.to_i)
-          end
-
-          guess = game.prompt_guess
-          expect(guess).to eq(valid_guess_array)
-        end
+      it "displays the error message once then stops loop" do
+        game.prompt_guess
+        expect(game).to have_received(:puts).with(error_message).once
       end
     end
+
   end # #prompt_guess
 
 

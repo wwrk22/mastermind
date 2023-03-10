@@ -2,13 +2,22 @@ require_relative './board.rb'
 
 class Game
   
-  def initialize(board, player_1, player_2, num_rounds=1)
+  def initialize(board, player_1, player_2)
     @board = board
     @players = [player_1, player_2]
     @board_row_index = 0
-    @num_rounds = num_rounds
-    @round_num = 0
+    @round_num = 1
   end
+
+
+  def play
+    puts "Welcome to Mastermind."
+    @round_count = prompt_round_count
+
+    puts "--ROUND #{@round_num}--"
+    
+  end
+
 
   ##
   # Create an array of four randomly generated integers within [0, 5] to
@@ -20,12 +29,25 @@ class Game
   end
 
 
-  ##
-  # Prompt player for a guess then return an array containing the four numbers of
-  # the guess. Return nil if the guess is invalid.
   def prompt_guess
-    guess = gets.chomp
-    
+    loop do
+      print "Make a guess: "
+      guess = gets.chomp
+      guess = verify_guess(guess)
+
+      if guess != nil
+        return guess
+      else
+        puts "Invalid input. Guess must be four digits with every digit within [0,5]."
+      end
+    end
+  end
+
+
+  ##
+  # Verify player guess for validity. Guess must be four digit string with
+  # each digit within [0,5].
+  def verify_guess(guess)
     if guess_valid? guess
       guess_array = []
 

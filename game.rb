@@ -41,6 +41,23 @@ class Game
 
 
   ##
+  # Prompt player for number of rounds to be played until valid input is given.
+  # The number must be within two and ten, inclusive.
+  def prompt_round_count
+    loop do
+      print "How many rounds will there be? "
+      round_count = gets.chomp.to_i
+
+      if 2 <= round_count && round_count <= 10
+        return round_count
+      else
+        puts "Number of rounds must be within two and ten inclusive."
+      end
+    end
+  end
+
+
+  ##
   # Return true if the given guess matches the secret code on the game board.
   # Otherwise, return false.
   def check_guess(guess)

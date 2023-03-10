@@ -5,6 +5,14 @@ require 'support/game_spec_helper'
 RSpec.describe Game do
   include GameSpecHelper
 
+  # Suppress stdout and stderr messages on console.
+  before :all do
+    @stdout = $stdout
+    @stderr = $stderr
+    $stdout = File.open(File::NULL, 'w')
+    $stderr = File.open(File::NULL, 'w')
+  end
+
   describe "#generate_and_set_secret_code" do
     let(:board) { instance_double(Board) }
     subject(:game) { described_class.new(board, nil, nil) }
@@ -119,4 +127,44 @@ RSpec.describe Game do
     end
   end # #end_of_guess_check
 
+
+  describe "#prompt_round_count" do
+    subject(:game) { described_class.new(Board.new, nil, nil) }
+    let(:error_message) { "Number of rounds must be within two and ten inclusive." }
+    let(:valid_input) { "2" }
+    let(:invalid_input) { "foo" }
+
+    before do
+      allow(game).to receive(:puts).with(error_message)
+    end
+
+    context "when user input is valid" do
+      before do
+        allow(game).to receive(:gets).and_return(valid_input)
+      end
+
+      it "stops loop and does not display the error message" do
+        game.prompt_round_count
+        expect(game).not_to have_received(:puts).with(error_message)
+      end
+    end
+
+    context "when user gives one invalid input then a valid one" do
+      before do
+        allow(game).to receive(:gets).and_return(invalid_input, valid_input)
+      end
+
+      it "displays the error message once, then stops the loop" do
+        game.prompt_round_count
+        expect(game).to have_received(:puts).with(error_message).once
+      end
+    end
+  end
+
+  after :all do
+    $stdout = @stdout
+    $stderr = @stderr
+    @stdout = nil
+    @stderr = nil
+  end
 end

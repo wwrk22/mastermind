@@ -1,4 +1,4 @@
-require_relative '../game.rb'
+require_relative '../game'
 require 'support/game_spec_helper'
 
 

@@ -1,4 +1,5 @@
-require_relative './board.rb'
+require_relative './board'
+require_relative './player'
 
 class Game
   
@@ -148,25 +149,30 @@ class Game
 
       end_of_guess_check
 
-      break if @board_row_index == 0
+      if @board_row_index == 0
+        puts "The secret code was #{@board.secret_code}"
+        break
+      end
     end
   end
 
   ##
   # Prompt a guess and place the code pegs for it on the board.
   # Then check the guess to either end the current round or place the key pegs
-  # for a wrong guess.
+  # for a wrong guess. A guess always awards one point to the code maker.
   def play_guess
+    @players[1].score += 1
+
     guess = prompt_guess 
-    @board.place_code_pegs(guess)
+    @board.place_code_pegs(@board_row_index, guess)
     guessed_correctly = check_guess(guess)
 
     if guessed_correctly
-      puts "Congratulations. You broke the code."
+      puts "Congratulations. You broke the secret code #{@board.secret_code}."
     else
       puts "Wrong guess."
       key_pegs = generate_key_pegs(guess)
-      @board.place_key_pegs(key_pegs)
+      @board.place_key_pegs(@board_row_index, key_pegs)
     end
   end
 
@@ -174,10 +180,13 @@ class Game
   ##
   # Print intro message, generate and set the board's secret code, then prompt
   # player for number of rounds to play.
+  # Set score to zero for both players.
   def setup_game
     puts "Welcome to Mastermind."
     generate_and_set_secret_code
     @round_count = prompt_round_count
+    @players[0].score = 0
+    @players[1].score = 0
   end
 
 
@@ -209,7 +218,7 @@ class Game
     loser = @players[(@round_winner_index + 1) % 2]
 
     puts "End of round #{@round_num}"
-    puts "#{winner} wins this round"
+    puts "#{winner} is winning"
     puts "#{winner} has #{winner.score} points"
     puts "#{loser} has #{loser.score} points"
   end

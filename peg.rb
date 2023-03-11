@@ -1,6 +1,4 @@
 module Peg
-  ROW_MAX_PEG_COUNT = 4
-
   module CodePeg
     # The six colors that a code peg can have.
     RED = 0
@@ -9,6 +7,9 @@ module Peg
     GREEN = 3
     BLUE = 4
     PURPLE = 5
+
+    # Integer ordinals of the code pegs.
+    ORDINALS = Array(48..53)
   end
 
   module KeyPeg

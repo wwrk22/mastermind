@@ -128,22 +128,15 @@ class Game
   # Integer ordinals of '0', '1', ..., '5' are 48 to 53. Return true if
   # all digits are valid. Otherwise, return false.
   def guess_valid?(guess)
-    is_valid = true
+    return false if guess.length != Board::ROW_MAX_PEG_COUNT
 
-    if guess.length == 4
-      valid_range = Array(48..53)
-      
-      guess.each_char do |c|
-        if valid_range.include?(c.ord) == false
-          is_valid = false
-          break
-        end
+    guess.each_char do |c|
+      if Board::CodePeg::ORDINALS.include?(c.ord) == false
+        return false
       end
-    else
-      is_valid = false
     end
 
-    return is_valid
+    return true
   end
 
 

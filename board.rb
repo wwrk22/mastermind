@@ -8,6 +8,7 @@ class Board
   include Errors
 
   NUM_ROWS = 12
+  ROW_MAX_PEG_COUNT = 4
 
   attr_reader :secret_code
 

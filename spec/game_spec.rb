@@ -135,6 +135,31 @@ RSpec.describe Game do
     end
   end
 
+
+  describe "#verify_guess" do
+    subject(:game) { described_class.new(Board.new, nil, nil) }
+
+    context "when input is valid" do
+      it "returns the input transformed into an array" do
+        valid_input = "0123"
+        valid_input_array = [0, 1, 2, 3]
+
+        result = game.verify_guess(valid_input)
+        expect(result).to eq(valid_input_array)
+      end
+    end
+
+    context "when input is invalid" do
+      it "returns nil" do
+        invalid_input = "01ab"
+
+        result = game.verify_guess(invalid_input)
+        expect(result).to be_nil
+      end
+    end
+  end
+
+
   after :all do
     $stdout = @stdout
     $stderr = @stderr

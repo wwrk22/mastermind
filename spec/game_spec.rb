@@ -7,10 +7,10 @@ RSpec.describe Game do
 
   # Suppress stdout and stderr messages on console.
   before :all do
-    @stdout = $stdout
-    @stderr = $stderr
-    $stdout = File.open(File::NULL, 'w')
-    $stderr = File.open(File::NULL, 'w')
+    #@stdout = $stdout
+    #@stderr = $stderr
+    #$stdout = File.open(File::NULL, 'w')
+    #$stderr = File.open(File::NULL, 'w')
   end
 
   describe "#generate_and_set_secret_code" do
@@ -60,7 +60,7 @@ RSpec.describe Game do
   end # #prompt_guess
 
 
-  describe "#generate_key_pegs" do 
+  describe "#check_code_pegs" do 
     subject(:game) { described_class.new(nil, nil) }
 
     GameSpecHelper::SAMPLES.each do |sample|
@@ -68,11 +68,13 @@ RSpec.describe Game do
         board = game.instance_variable_get(:@board)
         board.secret_code = sample[:secret_code]
 
-        generated_key_pegs = game.generate_key_pegs(sample[:guess])
-        expect(generated_key_pegs).to eq(sample[:key_pegs])
+        puts "\nSample guess: #{sample[:guess]}, code: #{sample[:secret_code]}\n"
+
+        key_pegs = game.check_code_pegs(sample[:guess])
+        expect(key_pegs).to eq(sample[:key_pegs])
       end
     end
-  end # #generate_key_pegs
+  end # #check_code_pegs
 
 
   describe "#end_of_guess_check" do
@@ -161,9 +163,9 @@ RSpec.describe Game do
 
 
   after :all do
-    $stdout = @stdout
-    $stderr = @stderr
-    @stdout = nil
-    @stderr = nil
+    #$stdout = @stdout
+    #$stderr = @stderr
+    #@stdout = nil
+    #@stderr = nil
   end
 end

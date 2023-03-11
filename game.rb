@@ -2,6 +2,9 @@ require_relative './board'
 require_relative './player'
 
 class Game
+
+  MIN_ROUND_COUNT = 2
+  MAX_ROUND_COUNT = 10
   
   def initialize(player_1, player_2)
     @board = Board.new
@@ -70,7 +73,7 @@ class Game
       print "How many rounds will there be? "
       round_count = gets.chomp.to_i
 
-      if 2 <= round_count && round_count <= 10
+      if MIN_ROUND_COUNT <= round_count && round_count <= MAX_ROUND_COUNT
         return round_count
       else
         puts "Number of rounds must be within two and ten inclusive."
@@ -89,27 +92,17 @@ class Game
 
   ##
   # Return an array of correctly generated key pegs for the given code pegs.
-  def generate_key_pegs(code_pegs)
-    key_pegs = []
-
+  def check_code_pegs(code_pegs)
     # Keep track of code pegs that haven't been matched yet.
     not_yet_matched = Array.new(@board.secret_code)
+    key_pegs = []
 
     code_pegs.each_with_index do |code_peg, index|
-      if code_peg == @board.secret_code[index]
-        key_pegs.append(Board::KeyPeg::BLACK)
-        not_yet_matched.delete(code_peg)
-      else
-        found_index = not_yet_matched.find_index(code_peg)
-
-        if found_index.nil? == false
-          not_yet_matched.delete_at(found_index)
-          key_pegs.append(Board::KeyPeg::WHITE)
-        end
-      end
+      key_peg = generate_key_peg(code_peg, index, not_yet_matched)
+      key_pegs.append(key_peg) if key_peg
     end
 
-    key_pegs
+    return key_pegs
   end
 
 
@@ -157,6 +150,27 @@ class Game
   private
 
   ##
+  # Return the correct key peg for the given code peg.
+  # Return nil if neither key peg is appropriate.
+  def generate_key_peg(code_peg, index, not_yet_matched)
+    key_peg = nil
+
+    if code_peg == @board.secret_code[index]
+      not_yet_matched.delete(code_peg)
+      key_peg = Board::KeyPeg::BLACK
+    else
+      found_index = not_yet_matched.find_index(code_peg)
+
+      if found_index
+        not_yet_matched.delete_at(found_index)
+        key_peg = Board::KeyPeg::WHITE
+      end
+    end
+
+    return key_peg
+  end
+
+  ##
   # Play the current round until the player breaks the secret code or runs out
   # of guesses.
   def play_round
@@ -192,7 +206,7 @@ class Game
       @code_broken = true
     else
       puts "Wrong guess."
-      key_pegs = generate_key_pegs(guess)
+      key_pegs = check_code_pegs(guess)
       @board.place_key_pegs(@board_row_index, key_pegs)
     end
   end

@@ -22,11 +22,11 @@ class Game
   def play
     setup_game
 
-    loop do
+    until @round_num > @round_count do
       @board.clear
       play_round
+      display_round_results
       @round_num += 1
-      break if @round_num > @round_count
     end
 
     puts "GAME OVER"
@@ -107,23 +107,6 @@ class Game
 
 
   ##
-  # If there is at least one more row to be played on the board, then simply
-  # increment @board_row_index. Otherwise, set @board_row_index to zero, then
-  # display the round results.
-  def end_of_guess_check
-    if @code_broken
-      @board_row_index = 0
-    else
-      @board_row_index = (@board_row_index + 1) % Board::NUM_ROWS
-    end
-
-    if @board_row_index == 0
-      display_round_results
-    end
-  end
-
-
-  ##
   # Check to make sure each digit (code peg) in the guess is a valid one.
   # Integer ordinals of '0', '1', ..., '5' are 48 to 53. Return true if
   # all digits are valid. Otherwise, return false.
@@ -142,25 +125,38 @@ class Game
 
   private
 
+  def end_of_guess_update
+    @board_row_index = (@board_row_index + 1) % Board::NUM_ROWS
+    if @board_row_index == 0
+      puts "No more guesses are left this round."
+      puts "The secret code was #{@board.secret_code}"
+    end
+  end
+
+  def process_guess
+    puts "Wrong guess."
+    guess = @board.get_code_pegs(@board_row_index)
+    key_pegs = check_code_pegs(guess)
+    @board.place_key_pegs(@board_row_index, key_pegs)
+  end
+
   ##
   # Return the correct key peg for the given code peg.
   # Return nil if neither key peg is appropriate.
   def generate_key_peg(code_peg, index, not_yet_matched)
-    key_peg = nil
-
     if code_peg == @board.secret_code[index]
       not_yet_matched.delete(code_peg)
-      key_peg = Board::KeyPeg::BLACK
+      return Board::KeyPeg::BLACK
     else
       found_index = not_yet_matched.find_index(code_peg)
 
       if found_index
         not_yet_matched.delete_at(found_index)
-        key_peg = Board::KeyPeg::WHITE
+        return Board::KeyPeg::WHITE
+      else
+        return nil
       end
     end
-
-    return key_peg
   end
 
   ##
@@ -168,18 +164,20 @@ class Game
   # of guesses.
   def play_round
     puts ">> ROUND #{@round_num} <<"
-    @code_broken = false
+    @board_row_index = 0
 
-    loop do
-      play_guess
+    until @board_row_index < Board::NUM_ROWS do
+      guessed_correctly = play_guess
       @board.display
-      end_of_guess_check
-      break if @code_broken
 
-      if @board_row_index == 0
-        puts "The secret code was #{@board.secret_code}"
+      if guessed_correctly
+        puts "Congratulations. You broke the secret code #{@board.secret_code}."
         break
+      else
+        process_guess
       end
+
+      end_of_guess_update
     end
   end
 
@@ -192,16 +190,8 @@ class Game
 
     guess = prompt_guess 
     @board.place_code_pegs(@board_row_index, guess)
-    guessed_correctly = check_guess(guess)
-
-    if guessed_correctly
-      puts "Congratulations. You broke the secret code #{@board.secret_code}."
-      @code_broken = true
-    else
-      puts "Wrong guess."
-      key_pegs = check_code_pegs(guess)
-      @board.place_key_pegs(@board_row_index, key_pegs)
-    end
+    return true if check_guess(guess)
+    return false
   end
 
 

@@ -68,41 +68,11 @@ RSpec.describe Game do
         board = game.instance_variable_get(:@board)
         board.secret_code = sample[:secret_code]
 
-        puts "\nSample guess: #{sample[:guess]}, code: #{sample[:secret_code]}\n"
-
         key_pegs = game.check_code_pegs(sample[:guess])
         expect(key_pegs).to eq(sample[:key_pegs])
       end
     end
   end # #check_code_pegs
-
-
-  describe "#end_of_guess_check" do
-    subject(:game) { described_class.new(nil, nil) }
-
-    before do
-      allow(game).to receive(:display_round_results)
-    end
-
-    context "when player has at least one more guess left for the round" do
-      it "does not display round results" do
-        game.end_of_guess_check
-        expect(game).not_to have_received(:display_round_results)
-      end
-    end
-
-    context "when player has no guesses left for the round" do
-      before do
-        game.instance_variable_set(:@board_row_index, Board::NUM_ROWS - 1)
-      end
-
-      it "displays round results" do
-        game.end_of_guess_check
-        expect(game).to have_received(:display_round_results)
-      end
-
-    end
-  end # #end_of_guess_check
 
 
   describe "#prompt_round_count" do

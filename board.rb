@@ -58,6 +58,14 @@ class Board
 
 
   ##
+  # Return the code pegs at the given index.
+  # Raises an IndexError if `row_index` is not within bounds [0, 11].
+  def get_code_pegs(row_index)
+    @code_rows.fetch(row_index)
+  end
+
+
+  ##
   # Clear all rows of code pegs and key pegs.
   def clear
     @code_rows = create_new_rows

@@ -8,6 +8,7 @@ class Game
     @players = [player_1, player_2]
     @board_row_index = 0
     @round_num = 1
+    @code_broken = false
   end
 
 
@@ -19,6 +20,7 @@ class Game
     setup_game
 
     loop do
+      @board.clear
       play_round
       @round_num += 1
       break if @round_num > @round_count
@@ -127,7 +129,11 @@ class Game
   # increment @board_row_index. Otherwise, set @board_row_index to zero, then
   # display the round results.
   def end_of_guess_check
-    @board_row_index = (@board_row_index + 1) % Board::NUM_ROWS
+    if @code_broken
+      @board_row_index = 0
+    else
+      @board_row_index = (@board_row_index + 1) % Board::NUM_ROWS
+    end
 
     if @board_row_index == 0
       display_round_results
@@ -142,11 +148,13 @@ class Game
   # of guesses.
   def play_round
     puts ">> ROUND #{@round_num} <<"
+    @code_broken = false
 
     loop do
       play_guess
-      @board.display
+      break if @code_broken
 
+      @board.display
       end_of_guess_check
 
       if @board_row_index == 0
@@ -169,6 +177,7 @@ class Game
 
     if guessed_correctly
       puts "Congratulations. You broke the secret code #{@board.secret_code}."
+      @code_broken = true
     else
       puts "Wrong guess."
       key_pegs = generate_key_pegs(guess)
@@ -214,12 +223,11 @@ class Game
   ##
   # Print the results of the current round to stdout.
   def display_round_results
-    winner = @players[@round_winner_index]
-    loser = @players[(@round_winner_index + 1) % 2]
+    human = @players[0]
+    computer = @players[1]
 
     puts "End of round #{@round_num}"
-    puts "#{winner} is winning"
-    puts "#{winner} has #{winner.score} points"
-    puts "#{loser} has #{loser.score} points"
+    puts "#{human.name} has #{human.score} points"
+    puts "#{computer.name} has #{computer.score} points"
   end
 end

@@ -1,6 +1,6 @@
 require 'Set'
-require './peg.rb'
-require './board_errors.rb'
+require './peg'
+require './board_errors'
 
 
 class Board
@@ -8,6 +8,7 @@ class Board
   include Errors
 
   NUM_ROWS = 12
+  ROW_MAX_PEG_COUNT = 4
 
   attr_reader :secret_code
 
@@ -23,10 +24,8 @@ class Board
   # [0, 11].
   # Raises an InvalidCodePegCountError if exactly four pegs are not given.
   def place_code_pegs(row_index, code_pegs)
-    # Validate row index.
     @code_rows.fetch(row_index)
 
-    # Disallow empty code peg holes or more than four.
     if code_pegs.size != ROW_MAX_PEG_COUNT
       raise InvalidCodePegCountError.new(code_pegs.size)
     end
@@ -44,10 +43,8 @@ class Board
   # [0, 11].
   # Raises an InvalidKeyPegCountError if more than four key pegs are given.
   def place_key_pegs(row_index, key_pegs)
-    # Validate row index.
     @key_rows.fetch(row_index)
 
-    # Disallow key peg count greater than four.
     if key_pegs.size > ROW_MAX_PEG_COUNT
       raise InvalidKeyPegCountError.new(key_pegs.size)
     end
@@ -59,19 +56,14 @@ class Board
     end
   end
 
+
   ##
-  # Return the code pegs from the row at the given index.
-  # Raise an IndexError if the index is not within the bounds of [0, 11].
+  # Return the code pegs at the given index.
+  # Raises an IndexError if `row_index` is not within bounds [0, 11].
   def get_code_pegs(row_index)
     @code_rows.fetch(row_index)
   end
 
-  ##
-  # Return the key peg from the row at the given index.
-  # Raise an IndexError if the index is not within the bounds of [0, 11].
-  def get_key_pegs(row_index)
-    @key_rows.fetch(row_index)
-  end
 
   ##
   # Clear all rows of code pegs and key pegs.
@@ -86,13 +78,8 @@ class Board
     full_rows = @code_rows.zip(@key_rows)
 
     full_rows.each do |row|
-      code_pegs = row[0]
-      key_pegs = row[1]
-
-      code_pegs.each { |code_peg| print "#{code_peg} " }
-      print "| "
-      key_pegs.each { |key_peg| print "#{key_peg} " }
-      print "\n"
+      print_code_pegs(row[0])
+      print_key_pegs(row[1]) 
     end
   end
 
@@ -101,7 +88,6 @@ class Board
   # Raise a TypeError if secret_code is not an Array.
   # Raise an InvalidCodePegCountError if secret_code does not have four colors.
   def secret_code=(secret_code)
-    # Validate type and size.
     if secret_code.class != Array
       raise TypeError, "Expected an Array. Got #{secret_code.class}."
     end
@@ -114,6 +100,23 @@ class Board
   end
 
   private
+
+  def print_code_pegs(code_pegs)
+    if code_pegs.size == 0
+      print "        "
+    else
+      code_pegs.each { |code_peg| print "#{code_peg} " }
+    end
+
+    print "| " # divide the board
+  end
+
+
+  def print_key_pegs(key_pegs)
+    key_pegs.each { |key_peg| print "#{key_peg} " }
+    print "\n"
+  end
+
 
   def create_new_rows
     Array.new(NUM_ROWS) { Array.new }

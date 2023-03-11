@@ -7,17 +7,17 @@ RSpec.describe Game do
 
   # Suppress stdout and stderr messages on console.
   before :all do
-    @stdout = $stdout
-    @stderr = $stderr
-    $stdout = File.open(File::NULL, 'w')
-    $stderr = File.open(File::NULL, 'w')
+    #@stdout = $stdout
+    #@stderr = $stderr
+    #$stdout = File.open(File::NULL, 'w')
+    #$stderr = File.open(File::NULL, 'w')
   end
 
   describe "#generate_and_set_secret_code" do
-    let(:board) { instance_double(Board) }
-    subject(:game) { described_class.new(board, nil, nil) }
+    subject(:game) { described_class.new(nil, nil) }
 
     it "sets a valid secret code in the game board" do 
+      board = game.instance_variable_get(:@board)
       expect(board).to receive(:secret_code=)
       game.generate_and_set_secret_code
     end
@@ -26,7 +26,7 @@ RSpec.describe Game do
 
   # Looping Script Method
   describe "#prompt_guess" do
-    subject(:game) { described_class.new(Board.new, nil, nil) }
+    subject(:game) { described_class.new(nil, nil) }
     let(:error_message) { "Invalid input. Guess must be four digits with every digit within [0,5]." }
     let(:valid_input) { "0123" }
     let(:invalid_input) { "01ww" }
@@ -60,50 +60,23 @@ RSpec.describe Game do
   end # #prompt_guess
 
 
-  describe "#generate_key_pegs" do 
-    let(:board) { Board.new }
-    subject(:game) { described_class.new(board, nil, nil) }
+  describe "#check_code_pegs" do 
+    subject(:game) { described_class.new(nil, nil) }
 
     GameSpecHelper::SAMPLES.each do |sample|
       it "generates an order-agnostic array of key pegs for a given row of code pegs" do
+        board = game.instance_variable_get(:@board)
         board.secret_code = sample[:secret_code]
-        generated_key_pegs = game.generate_key_pegs(sample[:guess])
-        expect(generated_key_pegs).to eq(sample[:key_pegs])
+
+        key_pegs = game.check_code_pegs(sample[:guess])
+        expect(key_pegs).to eq(sample[:key_pegs])
       end
     end
-  end # #generate_key_pegs
-
-
-  describe "#end_of_guess_check" do
-    subject(:game) { described_class.new(Board.new, nil, nil) }
-
-    before do
-      allow(game).to receive(:display_round_results)
-    end
-
-    context "when player has at least one more guess left for the round" do
-      it "does not display round results" do
-        game.end_of_guess_check
-        expect(game).not_to have_received(:display_round_results)
-      end
-    end
-
-    context "when player has no guesses left for the round" do
-      before do
-        game.instance_variable_set(:@board_row_index, Board::NUM_ROWS - 1)
-      end
-
-      it "displays round results" do
-        game.end_of_guess_check
-        expect(game).to have_received(:display_round_results)
-      end
-
-    end
-  end # #end_of_guess_check
+  end # #check_code_pegs
 
 
   describe "#prompt_round_count" do
-    subject(:game) { described_class.new(Board.new, nil, nil) }
+    subject(:game) { described_class.new(nil, nil) }
     let(:error_message) { "Number of rounds must be within two and ten inclusive." }
     let(:valid_input) { "2" }
     let(:invalid_input) { "foo" }
@@ -136,34 +109,33 @@ RSpec.describe Game do
   end
 
 
-  describe "#verify_guess" do
-    subject(:game) { described_class.new(Board.new, nil, nil) }
+  describe "#guess_valid?" do
+    subject(:game) { described_class.new(nil, nil) }
 
-    context "when input is valid" do
-      it "returns the input transformed into an array" do
-        valid_input = "0123"
-        valid_input_array = [0, 1, 2, 3]
+    context "when guess is valid" do
+      it "returns true" do
+        valid_guess = "0123"
 
-        result = game.verify_guess(valid_input)
-        expect(result).to eq(valid_input_array)
+        result = game.guess_valid? valid_guess
+        expect(result).to eq(true)
       end
     end
 
-    context "when input is invalid" do
-      it "returns nil" do
-        invalid_input = "01ab"
+    context "when guess is invalid" do
+      it "returns false" do
+        invalid_guess = "01ab"
 
-        result = game.verify_guess(invalid_input)
-        expect(result).to be_nil
+        result = game.guess_valid?(invalid_guess)
+        expect(result).to eq(false)
       end
     end
   end
 
 
   after :all do
-    $stdout = @stdout
-    $stderr = @stderr
-    @stdout = nil
-    @stderr = nil
+    #$stdout = @stdout
+    #$stderr = @stderr
+    #@stdout = nil
+    #@stderr = nil
   end
 end

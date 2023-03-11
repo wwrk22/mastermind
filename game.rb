@@ -3,8 +3,8 @@ require_relative './player'
 
 class Game
   
-  def initialize(board, player_1, player_2)
-    @board = board
+  def initialize(player_1, player_2)
+    @board = Board.new
     @players = [player_1, player_2]
     @board_row_index = 0
     @round_num = 1
@@ -44,10 +44,9 @@ class Game
     loop do
       print "Make a guess: "
       guess = gets.chomp
-      guess = verify_guess(guess)
 
-      if guess != nil
-        return guess
+      if guess_valid? guess
+        return make_guess_array(guess)
       else
         puts "Invalid input. Guess must be four digits with every digit within [0,5]."
       end
@@ -56,20 +55,10 @@ class Game
 
 
   ##
-  # Verify player guess for validity. Guess must be four digit string with
-  # each digit within [0,5].
-  def verify_guess(guess)
-    if guess_valid? guess
-      guess_array = []
-
-      guess.each_char do |c|
-        guess_array.append(c.to_i)
-      end
-
-      return guess_array
-    else
-      return nil
-    end
+  # Takes a `guess` string that represents four code pegs, and returns an array
+  # of those code pegs in integer format.
+  def make_guess_array(guess)
+    return guess.each_char.map { |c| c.to_i }
   end
 
 
@@ -141,6 +130,30 @@ class Game
   end
 
 
+  ##
+  # Check to make sure each digit (code peg) in the guess is a valid one.
+  # Integer ordinals of '0', '1', ..., '5' are 48 to 53. Return true if
+  # all digits are valid. Otherwise, return false.
+  def guess_valid?(guess)
+    is_valid = true
+
+    if guess.length == 4
+      valid_range = Array(48..53)
+      
+      guess.each_char do |c|
+        if valid_range.include?(c.ord) == false
+          is_valid = false
+          break
+        end
+      end
+    else
+      is_valid = false
+    end
+
+    return is_valid
+  end
+
+
   private
 
   ##
@@ -198,25 +211,6 @@ class Game
   end
 
 
-  ##
-  # Check to make sure each digit (code peg) in the guess is a valid one.
-  # Integer ordinals of '0', '1', ..., '5' are 48 to 53. Return true if
-  # all digits are valid. Otherwise, return false.
-  def guess_valid?(guess)
-    if guess.length == 4
-      valid_range = Array(48..53)
-      
-      guess.each_char do |c|
-        if valid_range.include?(c.ord) == false
-          return false
-        end
-      end
-
-      return true
-    else
-      return false
-    end
-  end
 
 
   ##

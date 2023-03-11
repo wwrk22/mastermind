@@ -152,10 +152,9 @@ class Game
 
     loop do
       play_guess
-      break if @code_broken
-
       @board.display
       end_of_guess_check
+      break if @code_broken
 
       if @board_row_index == 0
         puts "The secret code was #{@board.secret_code}"

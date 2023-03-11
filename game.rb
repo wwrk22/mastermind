@@ -24,6 +24,7 @@ class Game
 
     until @round_num > @round_count do
       @board.clear
+      generate_and_set_secret_code
       play_round
       display_round_results
       @round_num += 1
@@ -126,8 +127,9 @@ class Game
   private
 
   def end_of_guess_update
-    @board_row_index = (@board_row_index + 1) % Board::NUM_ROWS
-    if @board_row_index == 0
+    @board_row_index += 1
+
+    if @board_row_index == Board::NUM_ROWS
       puts "No more guesses are left this round."
       puts "The secret code was #{@board.secret_code}"
     end
@@ -166,9 +168,8 @@ class Game
     puts ">> ROUND #{@round_num} <<"
     @board_row_index = 0
 
-    until @board_row_index < Board::NUM_ROWS do
+    while @board_row_index < Board::NUM_ROWS do
       guessed_correctly = play_guess
-      @board.display
 
       if guessed_correctly
         puts "Congratulations. You broke the secret code #{@board.secret_code}."
@@ -177,6 +178,7 @@ class Game
         process_guess
       end
 
+      @board.display
       end_of_guess_update
     end
   end
@@ -201,7 +203,6 @@ class Game
   # Set score to zero for both players.
   def setup_game
     puts "Welcome to Mastermind."
-    generate_and_set_secret_code
     @round_count = prompt_round_count
     @players[0].score = 0
     @players[1].score = 0

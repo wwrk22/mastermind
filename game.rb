@@ -10,12 +10,20 @@ class Game
   end
 
 
+  ##
+  # Play the desired number of rounds.
+  # Generates and sets a secret code, and prompts the player for the number of
+  # rounds to play.
   def play
-    puts "Welcome to Mastermind."
-    @round_count = prompt_round_count
+    setup_game
 
-    puts "--ROUND #{@round_num}--"
-    
+    loop do
+      play_round
+      @round_num += 1
+      break if @round_num > @round_count
+    end
+
+    puts "GAME OVER"
   end
 
 
@@ -127,6 +135,51 @@ class Game
 
 
   private
+
+  ##
+  # Play the current round until the player breaks the secret code or runs out
+  # of guesses.
+  def play_round
+    puts ">> ROUND #{@round_num} <<"
+
+    loop do
+      play_guess
+      @board.display
+
+      end_of_guess_check
+
+      break if @board_row_index == 0
+    end
+  end
+
+  ##
+  # Prompt a guess and place the code pegs for it on the board.
+  # Then check the guess to either end the current round or place the key pegs
+  # for a wrong guess.
+  def play_guess
+    guess = prompt_guess 
+    @board.place_code_pegs(guess)
+    guessed_correctly = check_guess(guess)
+
+    if guessed_correctly
+      puts "Congratulations. You broke the code."
+    else
+      puts "Wrong guess."
+      key_pegs = generate_key_pegs(guess)
+      @board.place_key_pegs(key_pegs)
+    end
+  end
+
+
+  ##
+  # Print intro message, generate and set the board's secret code, then prompt
+  # player for number of rounds to play.
+  def setup_game
+    puts "Welcome to Mastermind."
+    generate_and_set_secret_code
+    @round_count = prompt_round_count
+  end
+
 
   ##
   # Check to make sure each digit (code peg) in the guess is a valid one.

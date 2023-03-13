@@ -60,19 +60,32 @@ RSpec.describe Game do
   end # #prompt_guess
 
 
-  describe "#check_code_pegs" do 
+  describe "#check_guess" do 
     subject(:game) { described_class.new(nil, nil) }
 
-    GameSpecHelper::SAMPLES.each do |sample|
-      it "generates an order-agnostic array of key pegs for a given row of code pegs" do
-        board = game.instance_variable_get(:@board)
-        board.secret_code = sample[:secret_code]
+    it "generates the correct order-agnostic key code for any given guess" do
+      result = true
+      board = game.instance_variable_get(:@board)
 
-        key_pegs = game.check_code_pegs(sample[:guess])
-        expect(key_pegs).to eq(sample[:key_pegs])
+      GameSpecHelper::SECRET_CODES.each_with_index do |secret_code, i|
+        board.secret_code = secret_code
+        guesses = GameSpecHelper::GUESSES[i]
+        key_codes = GameSpecHelper::KEY_CODES[i]
+
+        guesses.each_with_index do |guess, j|
+          key_code = game.check_guess(guess)
+          result = false if key_code != key_codes[j]
+          # BEGIN DEBUG
+          if key_code != key_codes[j]
+            puts "TEST FAILED FOR\nSECRET CODE #{secret_code}\nGUESS #{guess}\nKEY CODE #{key_codes[j]}\nGENERATED KEY CODE #{key_code}\n"
+          end
+          # END DEBUG
+        end
       end
+
+      expect(result).to eq(true)
     end
-  end # #check_code_pegs
+  end # #check_guess
 
 
   describe "#prompt_round_count" do

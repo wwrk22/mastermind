@@ -82,28 +82,33 @@ class Game
     end
   end
 
-
   ##
-  # Return true if the given guess matches the secret code on the game board.
-  # Otherwise, return false.
+  # Return an array of the appropriate key pegs in the current row for the
+  # given guess. Return an empty array when none of the code pegs in the
+  # guess are used in the secret code
   def check_guess(guess)
-    return guess == @board.secret_code
-  end
+    key_code = []
+    secret_code_pegs_left = []
+    guess_code_pegs_left = []
 
-
-  ##
-  # Return an array of correctly generated key pegs for the given code pegs.
-  def check_code_pegs(code_pegs)
-    # Keep track of code pegs that haven't been matched yet.
-    not_yet_matched = Array.new(@board.secret_code)
-    key_pegs = []
-
-    code_pegs.each_with_index do |code_peg, index|
-      key_peg = generate_key_peg(code_peg, index, not_yet_matched)
-      key_pegs.append(key_peg) if key_peg
+    @board.secret_code.each_with_index do |code_peg, index|
+      if code_peg == guess[index]
+        key_code.append(Board::KeyPeg::BLACK)
+      else
+        secret_code_pegs_left.append(code_peg)
+        guess_code_pegs_left.append(guess[index])
+      end
     end
 
-    return key_pegs
+    secret_code_pegs_left.each do |code_peg|
+      found_index = guess_code_pegs_left.find_index code_peg
+      if found_index
+        guess_code_pegs_left.delete_at(found_index)
+        key_code.append(Board::KeyPeg::WHITE)
+      end
+    end
+
+    return key_code
   end
 
 
@@ -138,28 +143,10 @@ class Game
   def process_guess
     puts "Wrong guess."
     guess = @board.get_code_pegs(@board_row_index)
-    key_pegs = check_code_pegs(guess)
+    key_pegs = check_guess(guess)
     @board.place_key_pegs(@board_row_index, key_pegs)
   end
 
-  ##
-  # Return the correct key peg for the given code peg.
-  # Return nil if neither key peg is appropriate.
-  def generate_key_peg(code_peg, index, not_yet_matched)
-    if code_peg == @board.secret_code[index]
-      not_yet_matched.delete(code_peg)
-      return Board::KeyPeg::BLACK
-    else
-      found_index = not_yet_matched.find_index(code_peg)
-
-      if found_index
-        not_yet_matched.delete_at(found_index)
-        return Board::KeyPeg::WHITE
-      else
-        return nil
-      end
-    end
-  end
 
   ##
   # Play the current round until the player breaks the secret code or runs out
@@ -192,7 +179,7 @@ class Game
 
     guess = prompt_guess 
     @board.place_code_pegs(@board_row_index, guess)
-    return true if check_guess(guess)
+    return true if guess == @board.secret_code
     return false
   end
 
@@ -207,8 +194,6 @@ class Game
     @players[0].score = 0
     @players[1].score = 0
   end
-
-
 
 
   ##

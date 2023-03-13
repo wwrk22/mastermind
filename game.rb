@@ -90,24 +90,10 @@ class Game
     key_code = []
     secret_code_pegs_left = []
     guess_code_pegs_left = []
-
-    @board.secret_code.each_with_index do |code_peg, index|
-      if code_peg == guess[index]
-        key_code.append(Board::KeyPeg::BLACK)
-      else
-        secret_code_pegs_left.append(code_peg)
-        guess_code_pegs_left.append(guess[index])
-      end
-    end
-
-    secret_code_pegs_left.each do |code_peg|
-      found_index = guess_code_pegs_left.find_index code_peg
-      if found_index
-        guess_code_pegs_left.delete_at(found_index)
-        key_code.append(Board::KeyPeg::WHITE)
-      end
-    end
-
+    black_key_pegs = in_pos_code_pegs(guess, secret_code_pegs_left, guess_code_pegs_left)
+    key_code.push(*black_key_pegs)
+    white_key_pegs = out_of_pos_code_pegs(secret_code_pegs_left, guess_code_pegs_left)
+    key_code.push(*white_key_pegs)
     return key_code
   end
 
@@ -130,6 +116,43 @@ class Game
 
 
   private
+
+  ##
+  # Process secret code pegs that weren't matched in its position to return
+  # an array of white key pegs that indicate existing matches in the guess
+  # code pegs given.
+  def out_of_pos_code_pegs(secret_code_pegs_left, guess_code_pegs_left)
+    key_pegs = []
+
+    secret_code_pegs_left.each do |code_peg|
+      found_index = guess_code_pegs_left.find_index code_peg
+      if found_index
+        guess_code_pegs_left.delete_at(found_index)
+        key_pegs.push(Board::KeyPeg::WHITE)
+      end
+    end
+
+    return key_pegs
+  end
+
+  ##
+  # Process a guess and return an array of black key pegs for all code pegs
+  # that are in the correct position according to the board's secret code.
+  def in_pos_code_pegs(guess, secret_code_pegs_left, guess_code_pegs_left)
+    black_key_pegs = []
+
+    @board.secret_code.each_with_index.map do |code_peg, index|
+      if code_peg == guess[index]
+        black_key_pegs.push(Board::KeyPeg::BLACK)
+      else
+        secret_code_pegs_left.push(code_peg)
+        guess_code_pegs_left.push(guess[index])
+      end
+    end
+
+    return black_key_pegs
+  end
+
 
   def end_of_guess_update
     @board_row_index += 1

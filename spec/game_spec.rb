@@ -7,10 +7,10 @@ RSpec.describe Game do
 
   # Suppress stdout and stderr messages on console.
   before :all do
-    #@stdout = $stdout
-    #@stderr = $stderr
-    #$stdout = File.open(File::NULL, 'w')
-    #$stderr = File.open(File::NULL, 'w')
+    @stdout = $stdout
+    @stderr = $stderr
+    $stdout = File.open(File::NULL, 'w')
+    $stderr = File.open(File::NULL, 'w')
   end
 
   describe "#generate_and_set_secret_code" do
@@ -146,9 +146,9 @@ RSpec.describe Game do
 
 
   after :all do
-    #$stdout = @stdout
-    #$stderr = @stderr
-    #@stdout = nil
-    #@stderr = nil
+    $stdout = @stdout
+    $stderr = @stderr
+    @stdout = nil
+    @stderr = nil
   end
 end

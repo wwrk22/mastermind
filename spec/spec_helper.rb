@@ -14,10 +14,12 @@
 #
 # See https://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 require 'support/matchers/valid_guess'
+require 'support/matchers/valid_guess_pool'
 
 RSpec.configure do |config|
   # Custom matcher for testing Computer class
-  config.include ValidGuessMatcher
+  config.include ValidGuess
+  config.include ValidGuessPool
 
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest

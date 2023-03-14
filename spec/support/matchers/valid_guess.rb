@@ -1,5 +1,5 @@
-module ValidGuessMatcher
-  class ValidGuessMatcher
+module ValidGuess
+  class ValidGuess
     def matches?(guess)
       @guess = guess
 
@@ -17,7 +17,7 @@ module ValidGuessMatcher
     end
   end
 
-  def be_valid
-    ValidGuessMatcher.new
+  def be_valid_guess
+    ValidGuess.new
   end
 end

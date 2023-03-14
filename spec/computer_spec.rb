@@ -16,7 +16,17 @@ RSpec.describe Computer do
 
     it "returns an array of four randomly generated integers, all within [0,5]" do
       guess = computer.random_guess
-      expect(guess).to be_valid
+      expect(guess).to be_valid_guess
+    end
+  end
+
+
+  describe "#create_guess_pool" do
+    subject(:computer) { described_class.new }
+
+    it "returns an array of 1296 guesses that are all unique" do
+      guess_pool = computer.create_guess_pool
+      expect(guess_pool).to be_valid_guess_pool
     end
   end
 

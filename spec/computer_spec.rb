@@ -25,7 +25,8 @@ RSpec.describe Computer do
     subject(:computer) { described_class.new }
 
     it "returns an array of 1296 guesses that are all unique" do
-      guess_pool = computer.create_guess_pool
+      computer.reset_guess_pool
+      guess_pool = computer.instance_variable_get(:@guess_pool)
       expect(guess_pool).to be_valid_guess_pool
     end
   end
